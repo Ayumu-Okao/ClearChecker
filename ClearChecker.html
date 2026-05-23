@@ -5,14 +5,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <title>クリアチェッカー</title>
     
-    <!-- ホーム画面追加（PWA）用の特殊設定 -->
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="クリアチェッカー">
     
-    <!-- アプリアイコン（✅マークのSVGデータを埋め込み） -->
     <link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><rect width=%22100%22 height=%22100%22 rx=%2220%22 fill=%22%232c3e50%22/><text y=%2270%22 x=%2210%22 font-size=%2260%22>✅</text></svg>">
-    <link rel="manifest" href="data:application/manifest+json,{%22name%22:%22%E3%82%AF%E3%83%AA%E3%82%A2%E3%83%81%E3%82%A7%E3%83%83%E3%82%AB%E3%83%BC%22,%22short_name%22:%22%E3%83%9F%E3%83%83%E3%82%B7%E3%83%A7%E3%83%B3%22,%22start_url%22:%22.%22,%22display%22:%22standalone%22,%22background_color%22:%22%232c3e50%22,%22theme_color%22:%22%232c3e50%22,%22icons%22:[{%22src%22:%22data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 100 100%27%3E%3Crect width=%27100%27 height=%27100%27 rx=%2720%27 fill=%27%232c3e50%27/%3E%3Ctext y=%2770%27 x=%2710%27 font-size=%2760%27%3E%E2%9C%85%3C/text%3E%3C/svg%3E%22,%22sizes%22:%22192x192%22,%22type%22:%22image/svg+xml%22}]}">
+    <link rel="manifest" href="data:application/manifest+json,{%22name%22:%22%E3%82%AF%E3%83%AA%E3%82%A2%E3%83%81%E3%82%A7%E3%83%83%E3%82%AB%E3%83%BC%22,%22short_name%22:%22%E3%83%9F%E3%83%83%E3%82%B7%E3%83%A7%E3%83%B3%22,%22start_url%22:%22%22,%22display%22:%22standalone%22,%22background_color%22:%22%232c3e50%22,%22theme_color%22:%22%232c3e50%22,%22icons%22:[{%22src%22:%22data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 100 100%27%3E%3Crect width=%27100%27 height=%27100%27 rx=%2720%27 fill=%27%232c3e50%27/%3E%3Ctext y=%2770%27 x=%2710%27 font-size=%2760%27%3E%E2%9C%85%3C/text%3E%3C/svg%3E%22,%22sizes%22:%22192x192%22,%22type%22:%22image/svg+xml%22}]}">
 
     <style>
         body {
@@ -23,7 +21,7 @@
             padding: 20px;
             margin: 0;
             -webkit-tap-highlight-color: transparent;
-            padding-top: env(safe-area-inset-top); /* スマホのノッチ（上部の切り欠き）対策 */
+            padding-top: env(safe-area-inset-top);
         }
         h1 { margin-bottom: 5px; font-size: 1.8rem; color: #f1c40f; }
         .hint { font-size: 0.7rem; color: #95a5a6; margin-bottom: 15px; }
@@ -79,12 +77,8 @@
             user-select: none;
             -webkit-user-select: none;
         }
-        .task-item.dragging {
-            opacity: 0.5;
-            transform: scale(1.05);
-        }
+        .task-item.dragging { opacity: 0.5; transform: scale(1.05); }
 
-        /* CLEAR! のスタンプ演出 */
         .task-item.cleared::after {
             content: 'CLEAR!';
             position: absolute; color: #e74c3c;
@@ -110,7 +104,6 @@
             font-size: 16px;
         }
 
-        /* 紙吹雪エフェクト */
         .confetti {
             position: fixed; pointer-events: none; z-index: 100;
             font-size: 20px; animation: fall 1.5s linear forwards;
@@ -172,6 +165,7 @@
             }
         }
 
+        // 編集機能
         function editTask(event, id) {
             if(event) event.preventDefault(); 
             const tasks = getTasks();
@@ -202,7 +196,7 @@
             }
         }
 
-        // --- ドラッグ＆ドロップ ＆ タッチ長押し ---
+        // ドラッグ＆ドロップ ＆ タッチ長押し
         let dragSrcId = null;
         let touchTimeout = null;
 
@@ -210,6 +204,12 @@
             dragSrcId = this.dataset.id;
             this.classList.add('dragging');
             if(e.dataTransfer) e.dataTransfer.effectAllowed = 'move';
+        }
+
+        // スマホなどのタッチ移動時の位置判定用
+        function getTouchTarget(e) {
+            const touch = e.touches[0];
+            return document.elementFromPoint(touch.clientX, touch.clientY);
         }
 
         function handleDragOver(e) {
